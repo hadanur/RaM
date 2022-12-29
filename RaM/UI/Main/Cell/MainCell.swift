@@ -14,7 +14,10 @@ class MainCell: UITableViewCell {
     @IBOutlet weak var locationType: UILabel!
     
     
-    func configure() {
+    func configure(name: String, dimension: String, type: String) {
         mainView.layer.cornerRadius = 8
+        locationName.text = name
+        locationDimension.text = dimension
+        locationType.text = type
     }
 }

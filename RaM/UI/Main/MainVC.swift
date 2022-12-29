@@ -9,6 +9,7 @@ import UIKit
 
 class MainVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
+    private var viewModel = MainVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,19 +22,22 @@ class MainVC: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
+        viewModel.delegate = self
+        viewModel.fetchLocations()
     }
     
 }
 
 extension MainVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return viewModel.locations.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let mainCell = tableView.dequeueReusableCell(withIdentifier: "mainCell") as! MainCell
+        let data = viewModel.locations[indexPath.row]
         mainCell.selectionStyle = .none
-        mainCell.configure()
+        mainCell.configure(name: data.name, dimension: data.dimension, type: data.type)
         return mainCell
     }
     
@@ -47,4 +51,18 @@ extension MainVC {
         let vc = MainVC(nibName: "MainVC", bundle: nil)
         return vc
     }
+}
+
+extension MainVC: MainVMDelegate {
+    func fetchLocationsOnSuccess() {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    func fetchLocationsOnError() {
+        self.showAlert(title: "Error", message: "No Internet Connection")
+    }
+    
+    
 }
